@@ -52,5 +52,11 @@ check: checker
 checker: checker.cpp
 	g++ -std=c++11 -o checker checker.cpp
 
+plot: degreedist.plt indegree_count.txt outdegree_count.txt
+	gnuplot degreedist.plt
+	epstopdf indegree_count.eps
+	epstopdf outdegree_count.eps
+
 clean:
 	rm -rf *.jar checker node_indegree.txt node_outdegree.txt indegree_count.txt outdegree_count.txt
+	rm -rf indegree_count.eps indegree_count.pdf outdegree_count.eps outdegree_count.pdf

@@ -9,32 +9,42 @@
 
 all: in out in_dist out_dist
 
-jar: IndegreeCounter.jar OutdegreeCounter.jar
+in: node_indegree.txt
 
-IndegreeCounter.jar: IndegreeCounter.java
-	hadoop com.sun.tools.javac.Main IndegreeCounter.java
-	jar cf IndegreeCounter.jar IndegreeCounter*.class
-	rm -rf IndegreeCounter*.class
+out: node_outdegree.txt
 
-OutdegreeCounter.jar: OutdegreeCounter.java
-	hadoop com.sun.tools.javac.Main OutdegreeCounter.java
-	jar cf OutdegreeCounter.jar OutdegreeCounter*.class
-	rm -rf OutdegreeCounter*.class
+in_dist: indegree_count.txt
 
-in:
-	hadoop jar IndegreeCounter.jar IndegreeCounter ./input ./output
-#	hadoop fs -cat output/part-r-00000
-#	hadoop fs -get output/part-r-00000 output.txt
+out_dist: outdegree_count.txt
 
-out:
-	hadoop jar OutdegreeCounter.jar OutdegreeCounter ./input ./output
-#	hadoop fs -cat output/part-r-00000
-#	hadoop fs -get output/part-r-00000 output.txt
+node_indegree.txt: IndegreeCounter.jar problem.edge
+	hadoop jar IndegreeCounter.jar IndegreeCounter problem.edge ./output
+	hadoop fs -get output/part-r-00000 node_indegree.txt
+	rm -rf output
+	cat node_indegree.txt
 
-in_dist:
+node_outdegree.txt: OutdegreeCounter.jar problem.edge
+	hadoop jar OutdegreeCounter.jar OutdegreeCounter problem.edge ./output
+	hadoop fs -get output/part-r-00000 node_outdegree.txt
+	rm -rf output
+	cat node_outdegree.txt
 
-out_dist:
+indegree_count.txt: DegreeDistribution.jar node_indegree.txt
+	hadoop jar DegreeDistribution.jar DegreeDistribution node_indegree.txt ./output
+	hadoop fs -get output/part-r-00000 indegree_count.txt
+	rm -rf output
+	cat indegree_count.txt
+
+outdegree_count.txt: DegreeDistribution.jar node_outdegree.txt
+	hadoop jar DegreeDistribution.jar DegreeDistribution node_outdegree.txt ./output
+	hadoop fs -get output/part-r-00000 outdegree_count.txt
+	rm -rf output
+	cat outdegree_count.txt
+
+%.jar: %.java
+	hadoop com.sun.tools.javac.Main $*.java
+	jar cf $*.jar $**.class
+	rm -rf $**.class
 
 clean:
-	rm -rf output*
-	rm -rf *.jar
+	rm -rf *.jar node_indegree.txt node_outdegree.txt indegree_count.txt outdegree_count.txt

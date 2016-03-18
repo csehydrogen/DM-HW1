@@ -9,10 +9,17 @@
 
 all: in out in_dist out_dist
 
-jar:
+jar: IndegreeCounter.jar OutdegreeCounter.jar
+
+IndegreeCounter.jar: IndegreeCounter.java
 	hadoop com.sun.tools.javac.Main IndegreeCounter.java
 	jar cf IndegreeCounter.jar IndegreeCounter*.class
 	rm -rf IndegreeCounter*.class
+
+OutdegreeCounter.jar: OutdegreeCounter.java
+	hadoop com.sun.tools.javac.Main OutdegreeCounter.java
+	jar cf OutdegreeCounter.jar OutdegreeCounter*.class
+	rm -rf OutdegreeCounter*.class
 
 in:
 	hadoop jar IndegreeCounter.jar IndegreeCounter ./input ./output
@@ -20,6 +27,9 @@ in:
 #	hadoop fs -get output/part-r-00000 output.txt
 
 out:
+	hadoop jar OutdegreeCounter.jar OutdegreeCounter ./input ./output
+#	hadoop fs -cat output/part-r-00000
+#	hadoop fs -get output/part-r-00000 output.txt
 
 in_dist:
 

@@ -12,11 +12,14 @@ import org.apache.hadoop.mapreduce.lib.reduce.IntSumReducer;
 import java.io.IOException;
 
 public class IndegreeCounter {
-    public static class MyMapper extends Mapper<Text, Text, IntWritable, IntWritable> {
+    private static class MyMapper
+            extends Mapper<Text, Text, IntWritable, IntWritable> {
         private final static IntWritable ONE = new IntWritable(1);
+        private IntWritable keyout = new IntWritable();
         public void map(Text src, Text dst, Context context)
-            throws IOException, InterruptedException {
-            context.write(new IntWritable(Integer.parseInt(dst.toString())), ONE);
+                throws IOException, InterruptedException {
+            keyout.set(Integer.parseInt(dst.toString()));
+            context.write(keyout, ONE);
         }
     }
 
@@ -25,6 +28,7 @@ public class IndegreeCounter {
         Job job = Job.getInstance(conf, "indegree count");
         job.setJarByClass(IndegreeCounter.class);
         job.setMapperClass(MyMapper.class);
+        job.setCombinerClass(IntSumReducer.class);
         job.setReducerClass(IntSumReducer.class);
         job.setInputFormatClass(KeyValueTextInputFormat.class);
         job.setOutputKeyClass(IntWritable.class);

@@ -46,5 +46,11 @@ outdegree_count.txt: DegreeDistribution.jar node_outdegree.txt
 	jar cf $*.jar $**.class
 	rm -rf $**.class
 
+check: checker
+	./checker problem.edge node_indegree.txt node_outdegree.txt indegree_count.txt outdegree_count.txt
+
+checker: checker.cpp
+	g++ -std=c++11 -o checker checker.cpp
+
 clean:
-	rm -rf *.jar node_indegree.txt node_outdegree.txt indegree_count.txt outdegree_count.txt
+	rm -rf *.jar checker node_indegree.txt node_outdegree.txt indegree_count.txt outdegree_count.txt

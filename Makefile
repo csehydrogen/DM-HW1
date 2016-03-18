@@ -1,6 +1,6 @@
 #####
-# Student ID: 2015-12345
-# Description: makefile for Homework 1. # indicates a comment in a bash shell
+# Student ID: 2013-11395
+# Description: makefile for Homework 1.
 # Usage: 
 #   * make in: run IndegreCounter.jar on Hadoop to compute the in-degree for each node
 #   * make out: run OutdegreeCounter.jar on Hadoop to compute the out-degree for each node
@@ -9,10 +9,15 @@
 
 all: in out in_dist out_dist
 
+jar:
+	hadoop com.sun.tools.javac.Main IndegreeCounter.java
+	jar cf IndegreeCounter.jar IndegreeCounter*.class
+	rm -rf IndegreeCounter*.class
+
 in:
-#	hadoop jar <jar file> <main class> ./problem.edge <output folder>
-#	hadoop fs -cat <output file in HDFS>
-#	hadoop fs -get <output file in HDFS> <output file in local> 
+	hadoop jar IndegreeCounter.jar IndegreeCounter ./input ./output
+#	hadoop fs -cat output/part-r-00000
+#	hadoop fs -get output/part-r-00000 output.txt
 
 out:
 
@@ -20,6 +25,6 @@ in_dist:
 
 out_dist:
 
-
-
-
+clean:
+	rm -rf output*
+	rm -rf *.jar
